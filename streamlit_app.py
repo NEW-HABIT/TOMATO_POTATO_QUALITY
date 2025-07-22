@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.models import load_model
+from  tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 import cv2
 from PIL import Image
@@ -14,8 +14,7 @@ model = load_model("vit_model.keras")
 crop_classes = ['Potato', 'Tomato']
 condition_classes = ['Unhealthy', 'Healthy']
 
-# Name of the last convolutional layer for Grad-CAM
-TARGET_LAYER = 'conv2d'  # Replace with your actual conv layer name
+TARGET_LAYER = 'conv2d' 
 
 # Image preprocessing
 def preprocess_image(img):
