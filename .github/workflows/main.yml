@@ -1,21 +1,42 @@
-name: Sync to Hugging Face hub
+name: Sync to Hugging Face Hub (with Git LFS)
 
 on:
   push:
     branches: [main]
 
-  # to run this workflow manually from the Actions tab
+  # Manual run from Actions tab
   workflow_dispatch:
 
 jobs:
   sync-to-hub:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+      # Step 1: Checkout repo with full history
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          lfs: true
 
-      - name: Push to hub
+      # Step 2: Install Git LFS
+      - name: Install Git LFS
+        run: |
+          git lfs install
+
+      # Step 3: Track large ML model files
+      - name: Track large files with Git LFS
+        run: |
+          git lfs track "*.keras"
+          git lfs track "*.h5"
+          git lfs track "*.pt"
+          git lfs track "*.pth"
+          git lfs track "*.ckpt"
+          git add .gitattributes
+          git commit -m "Track ML models with Git LFS" || echo "No changes to commit"
+
+      # Step 4: Push to Hugging Face Space
+      - name: Push to Hugging Face Hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
