@@ -1,42 +1,29 @@
-name: Sync to Hugging Face Hub (with Git LFS)
+name: Sync to Hugging Face Hub (LFS Fixed)
 
 on:
   push:
     branches: [main]
-
-  # Manual run from Actions tab
-  workflow_dispatch:
 
 jobs:
   sync-to-hub:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout repo with full history
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           lfs: true
 
-      # Step 2: Install Git LFS
       - name: Install Git LFS
         run: |
           git lfs install
 
-      # Step 3: Track large ML model files
-      - name: Track large files with Git LFS
+      - name: Migrate keras model to Git LFS (HISTORY FIX)
         run: |
-          git lfs track "*.keras"
-          git lfs track "*.h5"
-          git lfs track "*.pt"
-          git lfs track "*.pth"
-          git lfs track "*.ckpt"
-          git add .gitattributes
-          git commit -m "Track ML models with Git LFS" || echo "No changes to commit"
+          git lfs migrate import --include="*.keras"
 
-      # Step 4: Push to Hugging Face Space
-      - name: Push to Hugging Face Hub
+      - name: Push to Hugging Face
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
